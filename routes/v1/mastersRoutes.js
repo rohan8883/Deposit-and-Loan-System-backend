@@ -1,19 +1,12 @@
 import useRouter from 'express';
 import {
-  CreateMonthMaster,
   CreatePlanMaster,
-  deleteMonthById,
   deletePlanById,
-  getAllActiveMonths,
   getAllActivePlans,
-  getAllMonths,
   getAllPlans,
-  getMonthById,
   getPlanById,
-  updateMonthById,
   updatePlanById,
   updatePlanStatusById,
-  updateMonthStatusById
 } from '../../controller/MastersController.js';
 
 const router = useRouter.Router();
@@ -27,13 +20,5 @@ router.put('/update-plan/:id', updatePlanById); // endpoint: /masters/update-pla
 router.put('/update-plan-status/:id', updatePlanStatusById); // endpoint: /masters/update-plan-status/:id, body{}
 router.delete('/delete-plan/:id', deletePlanById); // endpoint: /masters/delete-plan/:id
 
-// month routes
-router.post('/create-month', CreateMonthMaster); // endpoint: /masters/create-month, body{}
-router.get('/get-all-months', getAllMonths); // endpoint: /masters/get-all-months
-router.get('/get-all-active-months', getAllActiveMonths); // endpoint: /masters/get-all-active-months
-router.get('/get-month/:id', getMonthById); // endpoint: /masters/get-month/:id
-router.put('/update-month/:id', updateMonthById); // endpoint: /masters/update-month/:id, body{}
-router.put('/update-month-status/:id', updateMonthStatusById); // endpoint: /masters/update-month-status/:id, body{}
-router.delete('/delete-month/:id', deleteMonthById); // endpoint: /masters/delete-month/:id
 
 export default router;

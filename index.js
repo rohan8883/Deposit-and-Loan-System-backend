@@ -8,7 +8,7 @@ import cors from 'cors';
 import connectionString from './config/connection.js';
 import rootRouter from './routes/index.js';
 import cron from 'node-cron';
-import { updateExpiredSubscriptionStatus } from './controller/SubscriptionController.js';
+// import { updateExpiredSubscriptionStatus } from './controller/SubscriptionController.js';
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config();
@@ -44,9 +44,9 @@ app.use('/checker', (req, res) => {
 });
 
 // nightly cron job to update expired subscription status 1 hours
-cron.schedule('0 0 * * *', async () => {
-  await updateExpiredSubscriptionStatus();
-});
+// cron.schedule('0 0 * * *', async () => {
+//   await updateExpiredSubscriptionStatus();
+// });
 
 // 1 hours
 // cron.schedule('0 */1 * * *', async () => {

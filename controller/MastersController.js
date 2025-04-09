@@ -1,5 +1,4 @@
-import PlanMaster from '../models/planMaster.model.js';
-import MonthMaster from '../models/monthMaster.model.js';
+import PlanMaster from '../models/planMaster.model.js'; 
 import Joi from 'joi';
 import mongoose from 'mongoose';
 
@@ -40,22 +39,7 @@ export async function CreatePlanMaster(req, res) {
     });
   }
 }
-
-// get all plans
-// export async function getAllPlans(req, res) {
-//   try {
-//     const plans = await PlanMaster.find();
-//     return res.status(200).json({
-//       success: true,
-//       data: plans
-//     });
-//   } catch (error) {
-//     return res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// }
+ 
 
 export async function getAllPlans(req, res) {
   const ownerId = req.user._id;  
@@ -77,24 +61,7 @@ export async function getAllPlans(req, res) {
   }
 }
 
-
-
-
-// get all active plans
-// export async function getAllActivePlans(req, res) {
-//   try {
-//     const plans = await PlanMaster.find({ status: 1 });
-//     return res.status(200).json({
-//       success: true,
-//       data: plans
-//     });
-//   } catch (error) {
-//     return res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// }
+ 
 export async function getAllActivePlans(req, res) {
   const ownerId = req.user._id;  
   const isOwner = req.user.roleId === '676e3938d0f5a92c824fc662';  
@@ -218,182 +185,4 @@ export async function deletePlanById(req, res) {
     return res.status(500).json({ success: false, message: error.message });
   }
 }
-
-// ============================ Month Master ============================
-// crete month master
-export async function CreateMonthMaster(req, res) {
-  // const ownerId = req.user._id;
-  const { monthName } = req.body;
-  try {
-    // const monthCheck = await MonthMaster.findOne({ monthName });
-    // if (monthCheck) {
-    //   return res.status(200).json({
-    //     success: false,
-    //     message: 'Month already exists'
-    //   });
-    // }
-
-    const newMonth = new MonthMaster({
-      monthName,
-      // createdById:ownerId,
-    });
-
-    await newMonth.save();
-
-    return res.status(201).json({
-      success: true,
-      message: 'Created successfully.',
-      newMonth
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-}
-
-// get all months
-export async function getAllMonths(req, res) {
-  // const ownerId = req.user._id;  
-  // const isOwner = req.user.roleId === '676e3938d0f5a92c824fc662'; 
-  try {
-    // const query = isOwner ? { createdById: ownerId } : {};
-    const months = await MonthMaster.find();
-    return res.status(200).json({
-      success: true,
-      data: months
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-}
-
-// get all active months
-export async function getAllActiveMonths(req, res) {
-  try {
-    const months = await MonthMaster.find({ status: 1});
-    return res.status(200).json({
-      success: true,
-      data: months
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-}
-// export async function getAllActiveMonths(req, res) {
-//   // const ownerId = req.user._id; 
-//   // const isOwner = req.user.roleId === '676e3938d0f5a92c824fc662';
-//   try {
-//     const query = {
-//       status: 1  
-//     };
-//     // if (isOwner) {
-//     //   query.createdById = new mongoose.Types.ObjectId(ownerId);
-//     // }
-//     const months = await MonthMaster.find();
-//     return res.status(200).json({
-//       success: true,
-//       data: months
-//     });
-//   } catch (error) {
-//     return res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// }
-
-// get month by id
-export async function getMonthById(req, res) {
-  const { id } = req.params;
-  try {
-    const month = await MonthMaster.findById(id);
-    if (!month) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Month not found' });
-    }
-    return res.status(200).json({ success: true, data: month });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
-  }
-}
-
-// update month by id
-export async function updateMonthById(req, res) {
-  const { id } = req.params;
-  const { monthName } = req.body;
-  try {
-    const month = await MonthMaster.findById(id);
-    if (!month) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Month not found' });
-    }
-
-    const updatedMonth = await MonthMaster.findByIdAndUpdate(
-      id,
-      { monthName },
-      { new: true }
-    );
-    return res.status(200).json({
-      success: true,
-      data: updatedMonth,
-      message: 'Updated successfully.'
-    });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
-  }
-}
-
-// update status if status=0 then status=1 and vice versa
-export async function updateMonthStatusById(req, res) {
-  const { id } = req.params;
-  try {
-    const month = await MonthMaster.findById(id);
-    if (!month) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Month not found' });
-    }
-    const updatedMonth = await MonthMaster.findByIdAndUpdate(
-      id,
-      { status: month.status === 1 ? 0 : 1 },
-      { new: true }
-    );
-    return res.status(200).json({
-      success: true,
-      data: updatedMonth,
-      message:
-        updatedMonth.status === 1 ? 'Month activated' : 'Month deactivated'
-    });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
-  }
-}
-
-// delete month by id
-export async function deleteMonthById(req, res) {
-  const { id } = req.params;
-  try {
-    const month = await MonthMaster.findById(id);
-    if (!month) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Month not found' });
-    }
-    await month.remove();
-    return res
-      .status(200)
-      .json({ success: true, message: 'Deleted successfully' });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
-  }
-}
+ 
