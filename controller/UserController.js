@@ -5,43 +5,117 @@ import { hash } from '../utils/index.js';
 
 // ════════════════════════════║  API TO Get All User ║═════════════════════════════════//
 
+// export async function CreateUserWithImage(req, res) {
+//   const upload = uploadFile('./uploads/profile');
+//   try {
+//     upload.single('imageUrl')(req, res, async (err) => {
+//       if (err) {
+//         res.status(400).json(err.message);
+//       } else {
+//         const { fullName, email, mobile, roleId,  address, password } =
+//           req.body;
+//         console.log(req.file?.filename);
+//         const checkEmail = await Users.findOne({ email });
+//         if (checkEmail) {
+//           return res.status(200).json({
+//             success: false,
+//             message: 'Email already exists'
+//           });
+//         }
+//         const hashPassword = await hash(String(password ?? '12345678'));
+//         const createUser = await Users.create({
+//           fullName,
+//           email,
+//           mobile,
+//           password: hashPassword,
+//           roleId,
+//           imageUrl: req.file?.filename,
+//           address,
+//           fullImgUrl: `${process.env.BACKEND_URL}/${req?.file?.filename}`
+//         });
+//         return res.status(200).json({
+//           success: true,
+//           userDetails: createUser,
+//           message: 'Successfully created'
+//         });
+//       }
+//     });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// }
+
 export async function CreateUserWithImage(req, res) {
   const upload = uploadFile('./uploads/profile');
   try {
     upload.single('imageUrl')(req, res, async (err) => {
       if (err) {
-        res.status(400).json(err.message);
-      } else {
-        const { fullName, email, mobile, roleId, ulbId, address, password } =
-          req.body;
-        console.log(req.file?.filename);
-        const checkEmail = await Users.findOne({ email });
-        if (checkEmail) {
-          return res.status(200).json({
-            success: false,
-            message: 'Email already exists'
-          });
-        }
-        const hashPassword = await hash(String(password ?? '12345678'));
-        const createUser = await Users.create({
-          fullName,
-          email,
-          mobile,
-          password: hashPassword,
-          roleId,
-          ulbId,
-          imageUrl: req.file?.filename,
-          address,
-          fullImgUrl: `${process.env.BACKEND_URL}/${req?.file?.filename}`
-        });
+        return res.status(400).json({ success: false, message: err.message });
+      }
+
+      const {
+        fullName,
+        email,
+        mobile,
+        roleId,
+        address,
+        password,
+        country,
+        states,
+        city,
+        zipCode,
+        aadhaarNumber,
+        panNumber,
+        bankName,
+        accountNumber,
+        ifscCode,
+        branchName,
+        accountType
+      } = req.body;
+
+      // Check for existing email or Aadhaar/account
+      const existingUser = await Users.findOne({ $or: [{ email }, { aadhaarNumber }, { 'bankDetails.accountNumber': accountNumber }] });
+      if (existingUser) {
         return res.status(200).json({
-          success: true,
-          userDetails: createUser,
-          message: 'Successfully created'
+          success: false,
+          message: 'Email, Aadhaar, or Account number already exists'
         });
       }
+
+      const hashedPassword = await hash(String(password ?? '12345678'));
+
+      const newUser = await Users.create({
+        fullName,
+        email,
+        mobile,
+        roleId,
+        address,
+        password: hashedPassword,
+        country,
+        states,
+        city,
+        zipCode,
+        imageUrl: req.file?.filename,
+        fullImgUrl: `${process.env.BACKEND_URL}/${req.file?.filename}`,
+        aadhaarNumber,
+        panNumber,
+        bankDetails: {
+          bankName,
+          accountNumber,
+          ifscCode,
+          branchName,
+          accountType
+        }
+      });
+
+      return res.status(200).json({
+        success: true,
+        userDetails: newUser,
+        message: 'Successfully created'
+      });
     });
   } catch (error) {
+    console.error('CreateUserWithImage error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 }

@@ -1,28 +1,16 @@
 import { model, Schema } from 'mongoose';
 import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
-const PlanMaster = new Schema(
-  {
-    planName: {
-      type: String,
-      required: true
-    },
-    createdById: {
-      type: Schema.Types.ObjectId,
-      ref: 'users',
-      path: '_id'
-    },
-    status: {
-      type: Number,
-      default: 1
-    }
-  },
-  {
-    timestamps: true
-  }
-);
-
-PlanMaster.plugin(aggregatePaginate);
-
-const PlansMaster = model('tbl_plans_mstrs', PlanMaster);
-export default PlansMaster;
+const planSchema = new Schema({
+  planName: { type: String, required: true },
+  amount: { type: Number, required: true },
+  duration: { type: Number, required: true },
+  interestRate: { type: Number, required: true },
+  fineRate: { type: Number, required: true },
+  description: { type: String },
+  createdAt: { type: Date, default: Date.now },
+  status: { type: Number, default: 1}
+});
+planSchema.plugin(aggregatePaginate);
+const Plan = model('Plan', planSchema);
+export default Plan;
